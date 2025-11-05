@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.0)
+cmake_minimum_required(VERSION 3.10.0...3.31.6)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
 # CMake 3.0 changed the project command, setting policy CMP0048 reverts to the old behaviour.

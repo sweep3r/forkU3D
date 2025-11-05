@@ -588,7 +588,7 @@ In your own project root directory, create a main CMakeLists.txt file and add th
 
 \code
 # Set CMake minimum version
-cmake_minimum_required (VERSION 3.10.2)
+cmake_minimum_required (VERSION 3.10.2...3.31.6)
 
 # Set project name
 project (MyProjectName)

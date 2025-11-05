@@ -5,7 +5,7 @@
 # MSVC runtime library flags are selected by an abstraction.
 set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
 
-cmake_minimum_required(VERSION 3.0.0...3.5)
+cmake_minimum_required(VERSION 3.0.0...3.31.6)
 # Urho3D - commented out setting SDL2 as project name as we want SDL sub-library to remain within Urho3D "umbrella" project
 #          instead, just enable the required language support and set the extra variables associated with project() command
 enable_language (C CXX)
@@ -2922,7 +2922,7 @@ if (SDL_ASAN)
 endif()
 
 if(SDL_CCACHE AND NOT CMAKE_VERSION VERSION_LESS 3.4)
-  cmake_minimum_required(VERSION 3.4...3.5)
+  cmake_minimum_required(VERSION 3.4...3.31.6)
   find_program(CCACHE_BINARY ccache)
   if(CCACHE_BINARY)
     set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_BINARY})

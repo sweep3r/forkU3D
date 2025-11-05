@@ -22,7 +22,7 @@
 
 if (NOT CMAKE_PROJECT_NAME STREQUAL Urho3D AND NOT URHO3D_AS_SUBMODULE)
     # Set CMake minimum version
-    cmake_minimum_required (VERSION 3.10.2)
+    cmake_minimum_required (VERSION 3.10.2...3.31.6)
 
     # Set project name
     project (Urho3D-ExternalProject-PackageTool)

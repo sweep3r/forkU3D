@@ -43,7 +43,7 @@
 #    source groups and library command)
 #
 # U3D : downgrade cmake version from 3.22 to 3.17
-cmake_minimum_required( VERSION 3.17 )
+cmake_minimum_required( VERSION 3.17...3.31.6 )
 SET( HEADER_PATH ../include/assimp )
 
 if(NOT ANDROID AND ASSIMP_ANDROID_JNIIOSYSTEM)

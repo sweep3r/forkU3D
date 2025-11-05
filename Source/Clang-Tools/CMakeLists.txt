@@ -28,7 +28,7 @@ if (CMAKE_PROJECT_NAME STREQUAL Urho3D OR URHO3D_AS_SUBMODULE)
     set_output_directories (${URHO3D_BUILD_DIR}/bin/tool/clang RUNTIME PDB)
 else ()
     # Set CMake minimum version
-    cmake_minimum_required (VERSION 3.10.2)
+    cmake_minimum_required (VERSION 3.10.2...3.31.6)
 
     # URHO3D_CLANG_TOOLS renamed URHO3D_CLANGTOOL
     # set default tool
