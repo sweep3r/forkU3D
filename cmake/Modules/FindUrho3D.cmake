@@ -92,14 +92,24 @@ else ()
             # Another special case where library location is already known to be in the build tree of Urho3D project
             get_filename_component (BUILD_STAGING_DIR ${BUILD_STAGING_DIR}/cmake DIRECTORY)
             set (URHO3D_HOME ${BUILD_STAGING_DIR}/cmake/${config}/${ANDROID_ABI})
+            set (URHO3D_BASE_INCLUDE_DIR ${URHO3D_HOME}/include/Urho3D)
         elseif (JNI_DIR)
             # Using Urho3D AAR from Maven repository
             get_filename_component (JNI_DIR ${JNI_DIR}/urho3d DIRECTORY)
             set (URHO3D_HOME ${JNI_DIR}/urho3d/${config}/${ANDROID_ABI})
-        else ()
-            message (FATAL_ERROR "Neither 'BUILD_STAGING_DIR' nor 'JNI_DIR' is set")
+            set (URHO3D_BASE_INCLUDE_DIR ${URHO3D_HOME}/include/Urho3D)
+        elseif (JNI_DIR_LOCAL)
+            # Using Urho3D from a local build. NB it seem that having subfolders before 
+            # the ABI-named folder now causes a 'Not an ABI' error.
+            set (URHO3D_HOME ${JNI_DIR_LOCAL}/${ANDROID_ABI})
+            set (URHO3D_BASE_INCLUDE_DIR ${JNI_DIR_LOCAL}/include/Urho3D)
+        elseif ()
+            message (FATAL_ERROR "One of 'BUILD_STAGING_DIR', 'JNI_DIR' or 'JNI_DIR_LOCAL' must be set")
         endif ()
-        set (URHO3D_BASE_INCLUDE_DIR ${URHO3D_HOME}/include/Urho3D)
+
+        message (STATUS "URHO3D_HOME = ${URHO3D_HOME}")
+        message (STATUS "URHO3D_BASE_INCLUDE_DIR = ${URHO3D_BASE_INCLUDE_DIR}")
+
         if (URHO3D_LIB_TYPE STREQUAL SHARED)
             set (URHO3D_LIBRARIES ${URHO3D_HOME}/lib/libUrho3D.so)
         else ()

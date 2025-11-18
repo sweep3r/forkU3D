@@ -51,7 +51,8 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         setOnKeyListener(this);
         setOnTouchListener(this);
 
-        mDisplay = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        // Urho: Fix deprecated getDisplay()
+        mDisplay = context.getDisplay();
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
 
         setOnGenericMotionListener(SDLActivity.getMotionListener());
