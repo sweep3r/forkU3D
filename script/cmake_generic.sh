@@ -47,6 +47,9 @@ for a in $@; do
         MINGW=1)
             OPTS=(-D CMAKE_TOOLCHAIN_FILE=$TOOLCHAINS/MinGW.cmake)
             ;;
+        ANDROID=1)
+            OPTS=(-G "Unix Makefiles")
+            ;;
     esac
 done
 

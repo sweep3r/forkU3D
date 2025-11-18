@@ -53,13 +53,17 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Locale;
+import java.util.ArrayList;
+import androidx.activity.ComponentActivity;
 
-import io.urho3d.UrhoActivity;
+// Notes:
+// Removed reference to UrhoActivity in preference of getLibraries override
+// Inherit from ComponentActivity rather than Activity
 
 /**
     SDL Activity
 */
-public class SDLActivity extends Activity implements View.OnSystemUiVisibilityChangeListener {
+public class SDLActivity extends ComponentActivity implements View.OnSystemUiVisibilityChangeListener {
     private static final String TAG = "SDL";
     private static final int SDL_MAJOR_VERSION = 2;
     private static final int SDL_MINOR_VERSION = 30;
@@ -258,11 +262,12 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         return "SDL_main";
     }
 
-    // Urho3D - avoid hardcoding of the library list
+    // Urho3D - avoid hardcoding of the library list, take the last library as the entry point library.
     protected void onLoadLibrary(List<String> libraryNames) {
         for (final String name : libraryNames) {
+            Log.i(TAG, "onLoadLibrary: " + name);
             SDL.loadLibrary(name);
-    }
+        }
 
         mMainSharedLib = "lib" + libraryNames.get(libraryNames.size() - 1) + ".so";
     }
@@ -317,7 +322,12 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         // Urho3D - auto load all the shared libraries available in the library path
         String errorMsgBrokenLib = "";
         try {
-            onLoadLibrary(UrhoActivity.getLibraryNames(this));
+	        // Removed, prefer override.
+            //List<String> libraries = UrhoActivity.getLibraryNames(this);
+            List<String> libraries = getLibraries();
+
+            Log.v(TAG, "Library count: " + libraries.size());
+            onLoadLibrary(libraries);
             mBrokenLibraries = false; /* success */
         } catch(UnsatisfiedLinkError e) {
             System.err.println(e.getMessage());
@@ -363,9 +373,11 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         }
 
         // Set up JNI
+        Log.v(TAG, "SDL Setup JNI");
         SDL.setupJNI();
 
         // Initialize state
+        Log.v(TAG, "SDL Init");
         SDL.initialize();
 
         // So we can call stuff from static callbacks
@@ -377,6 +389,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         mHIDDeviceManager = HIDDeviceManager.acquire(this);
 
         // Set up the surface
+        Log.v(TAG, "Create SDL Surface");
         mSurface = createSDLSurface(this);
 
         mLayout = new RelativeLayout(this);
@@ -396,10 +409,11 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         } catch(Exception ignored) {
         }
 
+        Log.v(TAG, "Set Content");
         setContentView(mLayout);
 
+        Log.v(TAG, "Set Window");
         setWindowStyle(false);
-
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(this);
 
         // Get filename from "Open with" of another application
@@ -411,6 +425,10 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                 SDLActivity.onNativeDropFile(filename);
             }
         }
+    }
+
+    protected List<String> getLibraries() {
+        return new ArrayList<String>();
     }
 
     protected void pauseNativeThread() {

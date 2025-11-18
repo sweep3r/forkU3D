@@ -1,0 +1,66 @@
+November 2025
+Building the Urho library for Android on Mac, using Clang not Gradle.
+Including the built library in a new Android Studio project
+
+Using
+	brew install cmake 3.31.6
+	brew install ninja 1.13.1
+	brew install pkg-config 2.5.1
+	Android Studio 25.2.1
+	Android SDK API 35
+	Java JetBrains 21.0.8
+	NDK 29.0.14206865
+
+NB Using example out-of-tree build folders e.g. ../build_xyz
+
+- From the U3D folder, run ./script/cmake_android.sh ../build_android_x86_64 -D ANDROID_ABI=x86_64
+- Wait 10mins. Navigate to the build folder and run make, to generate the lib/libUrho3D.so binary, wait another 10mins
+
+- Do another ABI e.g. ./script/cmake_android.sh ../build_android_arm64-v8a -D ANDROID_ABI=arm64-v8a
+- Navigate to the build folder and run make, as previously
+
+- Open Android Studio, check the Tools/SdkManager to download the right SDK and NDK versions
+- From the same place, select and download the same version of cmake.
+- Create a new Native C++ API 31+ project
+- Force the NDK to the same version by editing app/build.gradle.kts
+	ndkVersion = "29.0.14206865" (inside the Android{} section)
+- Force the cmake version in the same file
+	android { externalNativeBuild { cmake { version = 3.31.6 }}}
+- Sync gradle, build, and make sure the demo app runs OK.
+- Close Android Studio
+
+- Copy these 4 make-modules from U3D/cmake/Modules to app/src/main/cpp/cmake/Modules
+	CheckCompilerToolchain.cmake
+	CheckHost.cmake
+	FindUrho3D.cmake
+	UrhoCommon.cmake
+- Copy libUrho3D.so from the build_android_x86_64/lib to app/src/main/jniLibs/x86_64/
+- Copy other libs for other ABIs to their respective folders as above
+- Copy the build_android_x86_64/include/Urho3D headers folder to app/src/main/jniLibs/include/Urho3D  -- TODO try moving this up?
+- Copy the U3D/build/AutoLoad,CoreData,Data folders (or shortcuts) to the app/src/main/assets folder
+- Copy/code the app source (with entry point) to app/src/main/cpp, e.g. from U3D/Source/DefaultApp
+- Copy the SDL java from U3D/Source/ThirdParty/SDL/android-project/app/src/main/java/org to app/src/main/java
+
+- Open Android Studio
+- Update the main activity to inherit from SDLActivity
+- In the same file, comment out the setContentView() call
+- In the same file, override SDLActivity.getLibraries() as below
+    override fun getLibraries(): List<String> {
+        return mutableListOf("Urho3D", "androidexample")
+    }
+- Update the app build.gradle.kts file and specifcy a correct ABI filter, e.g.
+Android { defaultConfig { ndk {
+            abiFilters.clear()
+            abiFilters.add("x86_64") 
+			//abiFilters.add("arm64-v8a")
+		}}}
+- Edit the default C++ project definition in cpp/CMakeLists.txt, add these lines right after the 'project' definition
+	set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
+	set(JNI_DIR_LOCAL ../jniLibs)
+	include(UrhoCommon)
+	link_directories(${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI})
+- In the same file, add your source files to add_library(), e.g. DefaultApp.cpp DefaultApp.h
+- In the same file, target_link_libraries, add the urho library, e.g. Urho3d (no lib prefix or extension)
+- Sync and build, run in landscape if crash in portrait
+
+TODO fix portrait
